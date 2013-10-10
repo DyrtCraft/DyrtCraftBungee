@@ -7,6 +7,7 @@ public class DyrtCraftBungee extends Plugin {
 	
 	@Override
 	public void onEnable() {
+		getProxy().getPluginManager().registerCommand(this, new GdzieCommand());
 		getProxy().getPluginManager().registerCommand(this, new SerwerCommand());
 	}
 	
