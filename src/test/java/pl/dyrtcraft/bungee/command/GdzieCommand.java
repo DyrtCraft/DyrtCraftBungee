@@ -31,21 +31,21 @@ public class GdzieCommand extends Command {
 	
 	protected void kiedyArg(CommandSender sender, String arg) {
 		ProxiedPlayer player = ProxyServer.getInstance().getPlayer(arg);
-		if(isProxedPlayerOnline(player)) {
+		if(GdzieCommand.isProxedPlayerOnline(player)) {
 			DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /gdzie or /where " + arg); // Debug
 			sender.sendMessage(ChatColor.GRAY + "Gracz " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " jest teraz " + ChatColor.GREEN + "online" + ChatColor.GRAY + " na serwerze " + ChatColor.GOLD + player.getServer().getInfo().getName() + ChatColor.GRAY + ".");
 			if(sender.hasPermission("dyrtcraft.operator")) {
 				sender.sendMessage(ChatColor.GOLD + "========== Operator ==========");
-				sender.sendMessage(ChatColor.GRAY + "Obecny ping tego gracza to " + ChatColor.GOLD + player.getPing() + ChatColor.GRAY + ".");
-				sender.sendMessage(ChatColor.GRAY + "IP tego gracza to " + ChatColor.GOLD + player.getPing());
+				sender.sendMessage(ChatColor.GRAY + "Ping: " + ChatColor.GOLD + player.getPing() + ChatColor.GRAY + ".");
+				sender.sendMessage(ChatColor.GRAY + "IP: " + ChatColor.GOLD + player.getAddress());
 			}
 		} else {
 			DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /gdzie or /where " + arg); // Debug
-			sender.sendMessage(ChatColor.RED + "Gracz " + ChatColor.GOLD + arg + ChatColor.GRAY + " jest teraz " + ChatColor.RED + "offline" + ChatColor.GRAY + "!");
+			sender.sendMessage(ChatColor.GRAY + "Gracz " + ChatColor.GOLD + arg + ChatColor.GRAY + " jest teraz " + ChatColor.RED + "offline" + ChatColor.GRAY + "!");
 		}
 	}
 	
-	protected boolean isProxedPlayerOnline(ProxiedPlayer player) {
+	public static boolean isProxedPlayerOnline(ProxiedPlayer player) {
 		if(player == null || player.getServer() == null) {
 			return false;
 		} else {

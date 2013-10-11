@@ -9,7 +9,7 @@ import net.md_5.bungee.api.plugin.Command;
 
 public class FriendsCommand extends Command {
 
-	public FriendsCommand(String name, String permission, String[] aliases) {
+	public FriendsCommand() {
 		super("friends", "dyrtcraft.command.friends", "fr");
 	}
 
