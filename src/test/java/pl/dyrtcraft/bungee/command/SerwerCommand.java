@@ -71,6 +71,4 @@ public class SerwerCommand extends Command {
 		sender.sendMessage(ChatColor.GRAY + "Aby przejsc na wybrany serwer uzyj " + ChatColor.GOLD + "/serwer <nazwa>" + ChatColor.GRAY + "!");
 	}
 	
-	
-	
 }
