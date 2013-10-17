@@ -22,7 +22,7 @@ public class WhoCommand extends Command {
 		if(args.length==0) {
 			DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /who or /glist");
 			if(!(sender instanceof ProxiedPlayer)) {
-				sender.sendMessage(ChatColor.RED + "Nie mozesz wykonac tego polecenia z poziomu konsoli!");
+				showAll(sender);
 				return;
 			}
 			ProxiedPlayer player = (ProxiedPlayer) sender;
@@ -62,12 +62,15 @@ public class WhoCommand extends Command {
 		player.sendMessage(ChatColor.GRAY + "Liczba graczy na serwerze " + ChatColor.GOLD + server + ChatColor.GRAY + " to " + ChatColor.GOLD + liczba + ChatColor.GRAY + ".");
 		player.sendMessage(ChatColor.GRAY + "Lista graczy " + ChatColor.GREEN + "online" + ChatColor.GRAY + ":");
 		player.sendMessage(graczeLista.toString());
+		player.sendMessage(ChatColor.GRAY + "Aby uzyskac wiecej informacji o danym graczu uzyj " + ChatColor.GOLD + "/gdzie <gracz>");
+		return;
 	}
 	
 	protected void showAll(CommandSender sender) {
 		int liczba = ProxyServer.getInstance().getOnlineCount();
 		
-		sender.sendMessage(ChatColor.GRAY + "Liczba graczy na serwerowni DyrtCraft Netowork to " + ChatColor.GOLD + liczba + ChatColor.GRAY + ".");
+		sender.sendMessage(ChatColor.GRAY + "Liczba graczy na serwerowni DyrtCraft Network to " + ChatColor.GOLD + liczba + ChatColor.GRAY + ".");
+		return;
 	}
 	
 	protected void show(ServerInfo server, CommandSender sender) {
@@ -83,6 +86,8 @@ public class WhoCommand extends Command {
 		sender.sendMessage(ChatColor.GRAY + "Liczba graczy na serwerze " + ChatColor.GOLD + server + ChatColor.GRAY + " to " + ChatColor.GOLD + liczba + ChatColor.GRAY + ".");
 		sender.sendMessage(ChatColor.GRAY + "Lista graczy " + ChatColor.GREEN + "online" + ChatColor.GRAY + ":");
 		sender.sendMessage(graczeLista.toString());
+		sender.sendMessage(ChatColor.GRAY + "Aby uzyskac wiecej informacji o danym graczu uzyj " + ChatColor.GOLD + "/gdzie <gracz>");
+		return;
 	}
 	
 }
