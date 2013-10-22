@@ -1,5 +1,7 @@
 package pl.dyrtcraft.bungee.command;
 
+import java.util.Map;
+
 import pl.dyrtcraft.bungee.DyrtCraftBungee;
 
 import net.md_5.bungee.api.ChatColor;
@@ -45,20 +47,12 @@ public class HubCommand extends Command {
 				}
 				// Jezeli wyslano z konsoli
 				if(!(sender instanceof ProxiedPlayer)) {
-					sender.sendMessage(ChatColor.RED + "Nie mozesz wykonac tego polecenia z poziomu konsoli!");
+					sender.sendMessage(ChatColor.RED + "Uzycie: /hub -ALL <nazwa serwera>");
 					return;
 				}
 				ProxiedPlayer player = (ProxiedPlayer) sender;
-				// For: gracze to wszyscy gracze na serwerze
-				for(ProxiedPlayer gracze : ProxyServer.getInstance().getServerInfo(player.getServer().getInfo().getName()).getPlayers()) {
-					// Wiadomosc do wysylacacego (operatora)
-					sender.sendMessage(ChatColor.RED + "Wyrzucanie wszystkich graczy z serwera...");
-					// Polacz z serwerem lobby
-					gracze.sendMessage(ChatColor.GRAY + "Przelaczanie na serwer " + ChatColor.GOLD + "Lobby" + ChatColor.GRAY + "...");
-					player.connect(serverInfo);
-					player.sendMessage(ChatColor.GOLD + "Zostales przeniesiony na serwer Lobby.");
-					return;
-				}
+				kickPlayers(player);
+				return;
 			// Jezeli argument 0 to nie: -all
 			} else {
 				// Pobieranie gracza z listy graczy online
@@ -79,10 +73,57 @@ public class HubCommand extends Command {
 				gracz.connect(serverInfo);
 				return;
 			}
+		}
+		// Liczba argumentow - 2
+		if(args.length == 2) {
+			if(args[0].equalsIgnoreCase("-ALL")) {
+				Map<String, ServerInfo> servers = ProxyServer.getInstance().getServers();
+				ServerInfo serverInfo = servers.get(args[1]);
+				if(sender.hasPermission("dyrtcraft.command.hub.kickall.fromother")) {
+					if(servers.containsKey(args[1])) {
+						kickPlayersOther(sender, serverInfo);
+						return;
+					} else {
+						sender.sendMessage(ChatColor.RED + "Nie znaleziono serwera o nazwie " + args[1] + "! :(");
+						return;
+					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "Ojj, brak odpowiednich uprawnien!");
+					return;
+				}
+			} else {
+				sender.sendMessage(ChatColor.RED + "Niezrozumiale argumenty!");
+				sender.sendMessage(ChatColor.RED + "Uzycie: /lobby [-ALL|gracz]");
+				return;
+			}
 		// Liczba argumentow nie zostala spelniona
 		} else {
 			sender.sendMessage(ChatColor.RED + "Zbyt duzo argumentów!");
 			sender.sendMessage(ChatColor.RED + "Uzycie: /lobby [-ALL|gracz]");
+			return;
+		}
+	}
+	
+	protected void kickPlayers(ProxiedPlayer player) {
+		// Wiadomosc do wysylacacego (operatora)
+		player.sendMessage(ChatColor.RED + "Wyrzucanie wszystkich graczy z serwera...");
+		for(ProxiedPlayer gracze : ProxyServer.getInstance().getServerInfo(player.getServer().getInfo().getName()).getPlayers()) {
+			// Polacz z serwerem lobby
+			gracze.sendMessage(ChatColor.GRAY + "Przelaczanie na serwer " + ChatColor.GOLD + "Lobby" + ChatColor.GRAY + "...");
+			gracze.connect(serverInfo);
+			gracze.sendMessage(ChatColor.GOLD + "Zostales przeniesiony na serwer Lobby.");
+			return;
+		}
+	}
+	
+	protected void kickPlayersOther(CommandSender sender, ServerInfo server) {
+		// Wiadomosc do wysylacacego (operatora)
+		sender.sendMessage(ChatColor.RED + "Wyrzucanie wszystkich graczy z serwera " + server.getName() + "...");
+		for(ProxiedPlayer gracze : ProxyServer.getInstance().getServers().get(server).getPlayers()) {
+			// Polacz z serwerem lobby
+			gracze.sendMessage(ChatColor.GRAY + "Przelaczanie na serwer " + ChatColor.GOLD + "Lobby" + ChatColor.GRAY + "...");
+			gracze.connect(serverInfo);
+			gracze.sendMessage(ChatColor.GOLD + "Zostales przeniesiony na serwer Lobby.");
 			return;
 		}
 	}
