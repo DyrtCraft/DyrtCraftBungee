@@ -38,6 +38,7 @@ public class GdzieCommand extends Command {
 				sender.sendMessage(ChatColor.GOLD + "========== Operator ==========");
 				sender.sendMessage(ChatColor.GRAY + "Ping: " + ChatColor.GOLD + player.getPing() + ChatColor.GRAY + ".");
 				sender.sendMessage(ChatColor.GRAY + "IP: " + ChatColor.GOLD + player.getAddress());
+				sender.sendMessage(ChatColor.GRAY + "Grupa: " + ChatColor.GOLD + player.getGroups());
 			}
 		} else {
 			DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /gdzie or /where " + arg); // Debug

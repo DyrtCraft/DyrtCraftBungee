@@ -1,6 +1,5 @@
 package pl.dyrtcraft.bungee.command;
 
-import pl.dyrtcraft.bungee.DyrtCraftBungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -15,105 +14,104 @@ public class FriendsCommand extends Command {
 
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		if(args.length==0) {
-			DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /friends or /fr " + args); // Debug
-			if(!(sender instanceof ProxiedPlayer)) {
-				sender.sendMessage(ChatColor.RED + "Nie mozesz wykonac tego polecenia z poziomu konsoli!");
-				return;
-			}
-			ProxiedPlayer player = (ProxiedPlayer) sender;
-			FriendsCommand.showOnline(player);
+		if(!(sender instanceof ProxiedPlayer)) {
+			sender.sendMessage(ChatColor.RED + "System znajomych jest dostepny tylko dla graczy 'in-game'!");
 			return;
 		}
-		if(args.length==1) {
-			DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /friends or /fr " + args); // Debug
-			if(!(sender instanceof ProxiedPlayer)) {
-				sender.sendMessage(ChatColor.RED + "Nie mozesz wykonac tego polecenia z poziomu konsoli!");
-				return;
+		
+		ProxiedPlayer cmdSender = (ProxiedPlayer) sender;
+		if(args.length == 0) {
+			friends(cmdSender);
+		}
+		if(args.length == 2) {
+			if(args[0].equalsIgnoreCase("akceptuj") || args[0].equalsIgnoreCase("accept")) {
+				cmdSender.sendMessage(ChatColor.RED + "Przykro mi, lecz nie podales nicku gracza! :(");
+				cmdSender.sendMessage(ChatColor.GOLD + "Podaj jego nick uzywajac /fr akceptuj <nick>");
 			}
-			ProxiedPlayer player = (ProxiedPlayer) sender;
-			if(args[0].equalsIgnoreCase("-list") || args[0].equalsIgnoreCase("lista") || args[0].equalsIgnoreCase("pokaz") || args[0].equalsIgnoreCase("show")) {
-				FriendsCommand.show(player);
-				return;
+			if(args[0].equalsIgnoreCase("lista") || args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("l")) {
+				friends(cmdSender);
 			}
-			if(args[0].equalsIgnoreCase("-add") || args[0].equalsIgnoreCase("-delete") || args[0].equalsIgnoreCase("-remove")) {
-				erArg(sender);
-				return;
+			if(args[0].equalsIgnoreCase("odmow") || args[0].equalsIgnoreCase("odmów") || args[0].equalsIgnoreCase("deny")) {
+				cmdSender.sendMessage(ChatColor.RED + "Przykro mi, lecz nie podales nicku gracza! :(");
+				cmdSender.sendMessage(ChatColor.GOLD + "Podaj jego nick uzywajac /fr odmow <nick>");
 			}
-			if(sender.hasPermission("dyrtcraft.operator")) {
-				FriendsCommand.show(ProxyServer.getInstance().getPlayer(args[0]));
-				return;
+			if(args[0].equalsIgnoreCase("pomoc") || args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
+				showHelp(cmdSender);
+			}
+			if(args[0].equalsIgnoreCase("wyrzuc") || args[0].equalsIgnoreCase("kick")) {
+				cmdSender.sendMessage(ChatColor.RED + "Przykro mi, lecz nie podales nicku gracza! :(");
+				cmdSender.sendMessage(ChatColor.GOLD + "Podaj jego nick uzywajac /fr wyrzuc <nick>");
+			}
+			if(args[0].equalsIgnoreCase("zapros") || args[0].equalsIgnoreCase("invite")) {
+				cmdSender.sendMessage(ChatColor.RED + "Przykro mi, lecz nie podales nicku gracza! :(");
+				cmdSender.sendMessage(ChatColor.GOLD + "Podaj jego nick uzywajac /fr zapros <nick>");
+			}
+			if(args[0].equalsIgnoreCase("zaproszenia") || args[0].equalsIgnoreCase("fr") || args[0].equalsIgnoreCase("friends")) {
+				unknownFriends(cmdSender);
 			} else {
-				erArg(sender);
-				return;
+				cmdSender.sendMessage(ChatColor.RED + "Przykro mi, lecz nie zrozumialem polecenia \"" + args[0] + "\". :(");
+				cmdSender.sendMessage(ChatColor.GOLD + "Aby uzyskac pomoc systemu znajomych uzyj komendy /fr pomoc!");
 			}
 		}
-		if(args.length==2) {
-			DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /friends or /fr " + args); // Debug
-			if(!(sender instanceof ProxiedPlayer)) {
-				sender.sendMessage(ChatColor.RED + "Nie mozesz wykonac tego polecenia z poziomu konsoli!");
-				return;
-			}
-			ProxiedPlayer player = (ProxiedPlayer) sender;
-			if(args[0].equalsIgnoreCase("-add") || args[0].equalsIgnoreCase("-dodaj") || args[0].equalsIgnoreCase("-zapros")) {
-				FriendsCommand.add(player, args[1]);
-				return;
-			}
-			if(args[0].equalsIgnoreCase("-delete") || args[0].equalsIgnoreCase("-remove") || args[0].equalsIgnoreCase("-usun") || args[0].equalsIgnoreCase("-wyrzuc")) {
-				FriendsCommand.remove(player, args[0]);
-				return;
+		if(args.length == 3) {
+			ProxiedPlayer player = ProxyServer.getInstance().getPlayer(args[1]);
+			if(player == null || player.getServer() == null) {
+				sender.sendMessage(ChatColor.RED + "Przykro mi, lecz gracz \"" + player + "\" nie jest obecnie online!");
 			} else {
-				erArg(sender);
-				return;
+				if(args[0].equalsIgnoreCase("akceptuj") || args[0].equalsIgnoreCase("accept")) {
+					accept(cmdSender, player);
+				}
+				if(args[0].equalsIgnoreCase("odmow") || args[0].equalsIgnoreCase("odmów") || args[0].equalsIgnoreCase("deny")) {
+					deny(cmdSender, player);
+				}
+				if(args[0].equalsIgnoreCase("wyrzuc") || args[0].equalsIgnoreCase("kick")) {
+					kick(cmdSender, player);
+				}
+				if(args[0].equalsIgnoreCase("zapros") || args[0].equalsIgnoreCase("invite")) {
+					invite(cmdSender, player);
+				} else {
+					cmdSender.sendMessage(ChatColor.RED + "Przykro mi, lecz nie zrozumialem polecenia \"" + args[0] + "\". :(");
+					cmdSender.sendMessage(ChatColor.GOLD + "Aby uzyskac pomoc systemu znajomych uzyj komendy /fr pomoc!");
+				}
 			}
 		} else {
-			erArg(sender);
-			return;
+			cmdSender.sendMessage(ChatColor.RED + "Przykro mi, lecz podales zbyt duzo polecen! (" + args.toString() + ") :(");
+			cmdSender.sendMessage(ChatColor.GOLD + "Aby uzyskac pomoc systemu znajomych uzyj komendy /fr pomoc!");
 		}
 	}
 	
-	public static void add(ProxiedPlayer player, String add) {
-		player.sendMessage(ChatColor.YELLOW + "W budowie ;D");
-		/*
-		 * TODO
-		 */
+	private void showHelp(ProxiedPlayer cmdSender) {
+		cmdSender.sendMessage(ChatColor.GOLD + " ===== Centrum pomocy systemu znajomych w DyrtCraft Network ===== ");
+		cmdSender.sendMessage(ChatColor.GOLD + "/fr akceptuj <nick> " + ChatColor.GRAY + "- Akceptuj zaproszenie do gracza");
+		cmdSender.sendMessage(ChatColor.GOLD + "/fr lista " + ChatColor.GRAY + "- Lista Twoich znajomych");
+		cmdSender.sendMessage(ChatColor.GOLD + "/fr odmow <nick> " + ChatColor.GRAY + "- Odmów na zaproszenie od gracza");
+		cmdSender.sendMessage(ChatColor.GOLD + "/fr wyrzuc <nick> " + ChatColor.GRAY + "- Zerwij znajomosc z graczem");
+		cmdSender.sendMessage(ChatColor.GOLD + "/fr zapros <nick> " + ChatColor.GRAY + "- Zapros znajomego");
+		cmdSender.sendMessage(ChatColor.GOLD + "/fr zaproszenia " + ChatColor.GRAY + "- Lista zapytan od graczy");
 	}
 	
-	public static void remove(ProxiedPlayer player, String remove) {
-		player.sendMessage(ChatColor.YELLOW + "W budowie ;D");
-		/*
-		 * TODO
-		 */
+	private void accept(ProxiedPlayer cmdSender, ProxiedPlayer player) {
+		// TODO
 	}
 	
-	public static void show(ProxiedPlayer player) {
-		player.sendMessage(ChatColor.YELLOW + "W budowie ;D");
-		/*
-		 * TODO
-		 */
+	private void friends(ProxiedPlayer cmdSender) {
+		// TODO
 	}
 	
-	public static void showOnline(ProxiedPlayer player) {
-		player.sendMessage(ChatColor.YELLOW + "W budowie ;D");
-		/*
-		 * TODO
-		 */
+	private void deny(ProxiedPlayer cmdSender, ProxiedPlayer player) {
+		// TODO
 	}
 	
+	private void kick(ProxiedPlayer cmdSender, ProxiedPlayer player) {
+		// TODO
+	}
 	
-	protected void erArg(CommandSender sender) {
-		if(sender.hasPermission("dyrtcraft.operator")) {
-			sender.sendMessage(ChatColor.RED + "/fr " + ChatColor.GOLD + "Znajomi online");
-			sender.sendMessage(ChatColor.RED + "/fr <gracz> " + ChatColor.GOLD + "Wszyscy znajomi gracza \"gracz\"");
-			sender.sendMessage(ChatColor.RED + "/fr -add <gracz> " + ChatColor.GOLD + "Dodaj znajomego");
-			sender.sendMessage(ChatColor.RED + "/fr -list " + ChatColor.GOLD + "Lista znajomych");
-			sender.sendMessage(ChatColor.RED + "/fr -remove <gracz> " + ChatColor.GOLD + "Usun znajomego");
-			return;
-		} else {
-			sender.sendMessage(ChatColor.RED + "Podales/as nieprawidlowa liczbe argumentów!");
-			sender.sendMessage(ChatColor.RED + "Uzycie: /friends [-dodaj|-lista|-usun] [gracz]");
-			return;
-		}
+	private void invite(ProxiedPlayer cmdSender, ProxiedPlayer player) {
+		// TODO
+	}
+	
+	private void unknownFriends(ProxiedPlayer cmdSender) {
+		// TODO
 	}
 	
 }

@@ -5,9 +5,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 
 import pl.dyrtcraft.bungee.command.FriendsCommand;
 import pl.dyrtcraft.bungee.command.GdzieCommand;
-import pl.dyrtcraft.bungee.command.HubCommand;
-import pl.dyrtcraft.bungee.command.SerwerCommand;
-import pl.dyrtcraft.bungee.command.WhoCommand;
 
 public class DyrtCraftBungee extends Plugin {
 	
@@ -15,9 +12,9 @@ public class DyrtCraftBungee extends Plugin {
 	public void onEnable() {
 		getProxy().getPluginManager().registerCommand(this, new FriendsCommand());
 		getProxy().getPluginManager().registerCommand(this, new GdzieCommand());
-		getProxy().getPluginManager().registerCommand(this, new HubCommand());
-		getProxy().getPluginManager().registerCommand(this, new SerwerCommand());
-		getProxy().getPluginManager().registerCommand(this, new WhoCommand());
+		
+		//getProxy().getPluginManager().registerListener(this, new PlayerDisconnectListener());
+		//getProxy().getPluginManager().registerListener(this, new PlayerLoginListener());
 	}
 	
 	/**
