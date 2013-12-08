@@ -1,10 +1,12 @@
-package pl.dyrtcraft.bungee;
+package pl.dyrtcraft.bungee.command;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+
+import pl.dyrtcraft.bungee.DyrtCraftBungee;
 
 public class GdzieCommand extends Command {
 
@@ -22,23 +24,29 @@ public class GdzieCommand extends Command {
 	}
 	
 	protected void erArg(CommandSender sender) {
+		DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /gdzie or /where"); // Debug
 		sender.sendMessage(ChatColor.RED + "Podales/as nieprawidlowa liczbe argumentów!");
 		sender.sendMessage(ChatColor.RED + "Uzycie: /gdzie <gracz>");
-		DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /gdzie or /where");
 	}
 	
 	protected void kiedyArg(CommandSender sender, String arg) {
 		ProxiedPlayer player = ProxyServer.getInstance().getPlayer(arg);
-		if(isProxedPlayerOnline(player)) {
+		if(GdzieCommand.isProxedPlayerOnline(player)) {
+			DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /gdzie or /where " + arg); // Debug
 			sender.sendMessage(ChatColor.GRAY + "Gracz " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " jest teraz " + ChatColor.GREEN + "online" + ChatColor.GRAY + " na serwerze " + ChatColor.GOLD + player.getServer().getInfo().getName() + ChatColor.GRAY + ".");
-			sender.sendMessage(ChatColor.GRAY + "Obecny ping gracza " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " to " + ChatColor.GOLD + player.getPing() + ChatColor.GRAY + ".");
+			if(sender.hasPermission("dyrtcraft.operator")) {
+				sender.sendMessage(ChatColor.GOLD + "========== Operator ==========");
+				sender.sendMessage(ChatColor.GRAY + "Ping: " + ChatColor.GOLD + player.getPing() + ChatColor.GRAY + ".");
+				sender.sendMessage(ChatColor.GRAY + "IP: " + ChatColor.GOLD + player.getAddress());
+				sender.sendMessage(ChatColor.GRAY + "Grupa: " + ChatColor.GOLD + player.getGroups());
+			}
 		} else {
-			sender.sendMessage(ChatColor.RED + "Gracz \"" + arg + "\" nie jest obecnie online!");
+			DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /gdzie or /where " + arg); // Debug
+			sender.sendMessage(ChatColor.GRAY + "Gracz " + ChatColor.GOLD + arg + ChatColor.GRAY + " jest teraz " + ChatColor.RED + "offline" + ChatColor.GRAY + "!");
 		}
-		DyrtCraftBungee.debug(sender.getName() + " issued DyrtCraftBungee command /gdzie or /where " + arg);
 	}
 	
-	protected boolean isProxedPlayerOnline(ProxiedPlayer player) {
+	public static boolean isProxedPlayerOnline(ProxiedPlayer player) {
 		if(player == null || player.getServer() == null) {
 			return false;
 		} else {
